@@ -1,0 +1,32 @@
+{
+    "name": "Slidify",
+    "description": "Convert Figma frames into a Google Slides presentation.",
+    "keywords": [
+        "google sheets",
+        "figma",
+        "exporter"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vito Famiglietti",
+            "email": "vito.famiglietti@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Slidify\\Console\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.1.3",
+        "guzzlehttp/guzzle": "~6.0",
+        "symfony/console": "~3.0|~4.0",
+        "symfony/filesystem": "~3.0|~4.0",
+        "symfony/process": "~3.0|~4.0",
+        "google/apiclient": "^2.2"
+    },
+    "bin": [
+        "slidify"
+    ]
+}
