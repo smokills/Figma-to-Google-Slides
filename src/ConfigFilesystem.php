@@ -1,14 +1,16 @@
 <?php
 
-namespace Slidify\Console;
+namespace Slidify;
 
+use ErrorException;
 use Symfony\Component\Filesystem\Filesystem;
-
 class ConfigFilesystem
 {
     const CONFIG_DIRECTORY = 'config';
 
     const CONFIG_FILENAME = 'auth.cfg';
+
+    const GOOGLE_SERVICES_KEY = 'googleServiciesCredential.json';
 
     protected $filesystem;
 
@@ -17,20 +19,38 @@ class ConfigFilesystem
         $this->filesystem = new Filesystem;
     }
 
+    public function __get($property)
+    {
+        $config = $this->getConfigFile();
+
+        if (!$config->{$property}) {
+            throw new ErrorException("Config property {$property} doesn't exists");
+        }
+
+        return $config->{$property};
+    }
+
     public function check() : bool
     {
         return !!$this->checkConfigDir()
             && $this->checkConfigFile();
     }
 
+    public function checkGoogleCredentials()
+    {
+        return $this->filesystem->exists(
+            $this->getConfigDir() . DIRECTORY_SEPARATOR . self::GOOGLE_SERVICES_KEY
+        );
+    }
+
     protected function checkConfigDir() : bool
     {
-        return !!$this->filesystem->exists($this->getConfigDir());
+        return $this->filesystem->exists($this->getConfigDir());
     }
 
     protected function checkConfigFile() : bool
     {
-        return !!$this->filesystem->exists($this->getConfigDir() . DIRECTORY_SEPARATOR . self::CONFIG_FILENAME);
+        return $this->filesystem->exists($this->getConfigDir() . DIRECTORY_SEPARATOR . self::CONFIG_FILENAME);
     }
 
     protected function getConfigDir() : string
@@ -38,7 +58,15 @@ class ConfigFilesystem
         return getcwd() . DIRECTORY_SEPARATOR . self::CONFIG_DIRECTORY;
     }
 
-    protected function getConfigFile() : string
+    public function getConfigFile($arrayFormat = false)
+    {
+        return json_decode(
+            file_get_contents($this->getConfigFilePath()),
+            $arrayFormat
+        );
+    }
+
+    public function getConfigFilePath() : string
     {
         return $this->getConfigDir() . DIRECTORY_SEPARATOR . self::CONFIG_FILENAME;
     }
@@ -61,6 +89,15 @@ class ConfigFilesystem
         return true;
     }
 
+    public function createGoogleApplicationsServicesKey(string $path)
+    {
+        return $this->filesystem->copy(
+            $path,
+            $this->getConfigDir() . DIRECTORY_SEPARATOR . self::GOOGLE_SERVICES_KEY,
+            true
+        );
+    }
+
     protected function write($figmaAccessToken, $googleApiToken) : bool
     {
         $config = [
@@ -68,6 +105,6 @@ class ConfigFilesystem
             'googleApiToken' => $googleApiToken,
         ];
 
-        return !!file_put_contents($this->getConfigFile(), json_encode($config));
+        return !!file_put_contents($this->getConfigFilePath(), json_encode($config));
     }
 }

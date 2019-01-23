@@ -15,7 +15,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Slidify\\Console\\": "src/"
+            "Slidify\\": "src/"
         }
     },
     "require": {
