@@ -9,7 +9,7 @@ if (file_exists(__DIR__ . '/../../autoload.php')) {
 
 $app = new Symfony\Component\Console\Application('Slidify', '1.0');
 
-$app->add(new Slidify\Console\SlidifyCommand);
-$app->add(new Slidify\Console\ConfigureCommand);
+$app->add(new Slidify\Console\Commands\SlidifyCommand);
+$app->add(new Slidify\Console\Commands\ConfigureCommand);
 
 $app->run();
